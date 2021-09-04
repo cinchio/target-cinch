@@ -14,7 +14,7 @@ class Service():
         if environment == 'dev':
             self.host = 'https://engine-dev.cinch.io'
         elif environment == 'local':
-            self.host = 'http://0.0.0.0:8000'
+            self.host = 'http://app:8000'
         else:
             self.host = 'https://engine.cinch.io'
 
