@@ -46,3 +46,6 @@ class Service():
 
     def post_transaction_details(self, records):
         return self._patch('transactions/details', records)
+
+    def post_engagements(self, records):
+        return self._patch('unsubscribes', records)
