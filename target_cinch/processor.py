@@ -53,8 +53,7 @@ class Processor:
         elif model == "transaction_detail":
             self.service.post_transaction_details(self.batch_queues[model])
         elif model == "engagement":
-            res = self.service.post_engagements(self.batch_queues[model])
-            print(res.text, flush=True)
+            self.service.post_engagements(self.batch_queues[model])
 
         self.batch_queues[model] = []
 
