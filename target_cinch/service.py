@@ -18,11 +18,23 @@ class Service():
         else:
             self.host = 'https://engine.cinch.io'
 
-    def _patch(self, url, records):
+    def _patch(self, url, records, retry=True):
         token = self._get_token()
-        return requests.patch(f'{self.host}/{url}/bulk?match=entity',
+        response = requests.patch(f'{self.host}/{url}/bulk?match=entity',
                        json=records,
                        headers={"Authorization": f"Token {token}"})
+
+        # if we got logged out, try and log us back in and try again
+        if response.status_code == 401 and retry:
+            # We only want to do this once.
+            self.token = None
+            return self._patch(url, records, retry=False)
+
+        if response.status_code >= 400:
+            # Something bad happened.
+            raise Exception(f"Unable to communicate with server: {response.text}")
+
+        return response
 
     def _get_token(self):
         if not self.token:
