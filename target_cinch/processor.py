@@ -73,6 +73,8 @@ class Processor:
         self.add_to_queue(message['stream'], message['record'])
 
     def process_state(self, message):
+        # Send necessary data before we send the state message so our state isn't out of sync
+        self.finalize()
         # Pass on state messages
         singer.write_state(message['value'])
 
