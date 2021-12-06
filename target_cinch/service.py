@@ -1,4 +1,6 @@
 import requests
+from singer import logger
+import json
 
 
 class Service():
@@ -32,7 +34,13 @@ class Service():
 
         if response.status_code >= 400:
             # Something bad happened.
-            raise Exception(f"Unable to communicate with server: {response.text}")
+            logger.log_error(f'Request PATCH {self.host}/{url}/bulk?match=entity')
+            logger.log_error('DATA:')
+            logger.log_error(json.dumps(records, indent=2))
+            logger.log_error(f'Response Code: {response.status_code}')
+            logger.log_error(f'Response Text: {response.text}')
+
+            raise Exception(f"Unable to communicate with server")
 
         return response
 
