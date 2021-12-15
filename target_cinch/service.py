@@ -69,3 +69,6 @@ class Service():
 
     def post_engagements(self, records):
         return self._patch('unsubscribes', records)
+
+    def post_vehicles(self, records):
+        return self._patch('customer-refs/vehicles', records)

@@ -5,12 +5,19 @@ from singer import logger
 BATCH_SIZE = 500
 
 DEPENDENCIES = {
-    "schedule": ["customer_ref"],
+    "schedule": [
+        "customer_ref",
+    ],
     "transaction": [
         "customer_ref",
         "location",
     ],
-    "transaction_detail": ["transaction"],
+    "transaction_detail": [
+        "transaction",
+    ],
+    "vehicle": [
+        "customer_ref",
+    ],
 }
 
 
@@ -21,7 +28,11 @@ class Processor:
     def __init__(self, args):
         self.config = args.config
 
-        self.service = Service(self.config['email'], self.config['password'], self.config.get('environment'))
+        self.service = Service(
+            self.config["email"],
+            self.config["password"],
+            self.config.get("environment"),
+        )
 
         self.batch_queues = {
             "location": [],
@@ -30,6 +41,7 @@ class Processor:
             "transaction": [],
             "transaction_detail": [],
             "engagement": [],
+            "vehicle": [],
         }
 
     def post_batch(self, model):
@@ -54,6 +66,8 @@ class Processor:
             self.service.post_transaction_details(self.batch_queues[model])
         elif model == "engagement":
             self.service.post_engagements(self.batch_queues[model])
+        elif model == "vehicle":
+            self.service.post_vehicles(self.batch_queues[model])
 
         self.batch_queues[model] = []
 
@@ -70,20 +84,20 @@ class Processor:
         pass
 
     def process_record(self, message):
-        self.add_to_queue(message['stream'], message['record'])
+        self.add_to_queue(message["stream"], message["record"])
 
     def process_state(self, message):
         # Send necessary data before we send the state message so our state isn't out of sync
         self.finalize()
         # Pass on state messages
-        singer.write_state(message['value'])
+        singer.write_state(message["value"])
 
     def process(self, message):
-        if message['type'] == 'SCHEMA':
+        if message["type"] == "SCHEMA":
             self.process_schema(message)
-        elif message['type'] == 'RECORD':
+        elif message["type"] == "RECORD":
             self.process_record(message)
-        elif message['type'] == 'STATE':
+        elif message["type"] == "STATE":
             self.process_state(message)
 
     def finalize(self):
