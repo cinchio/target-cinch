@@ -11,6 +11,7 @@ DEPENDENCIES = {
     "transaction": [
         "customer_ref",
         "location",
+        "vehicle",
     ],
     "transaction_detail": [
         "transaction",
