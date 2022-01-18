@@ -16,6 +16,9 @@ DEPENDENCIES = {
     "transaction_detail": [
         "transaction",
     ],
+    "transaction_coupon": [
+        "transaction",
+    ],
     "vehicle": [
         "customer_ref",
     ],
@@ -41,6 +44,7 @@ class Processor:
             "schedule": [],
             "transaction": [],
             "transaction_detail": [],
+            "transaction_coupon": [],
             "engagement": [],
             "vehicle": [],
         }
@@ -65,6 +69,8 @@ class Processor:
             self.service.post_transactions(self.batch_queues[model])
         elif model == "transaction_detail":
             self.service.post_transaction_details(self.batch_queues[model])
+        elif model == "transaction_coupon":
+            self.service.post_transaction_coupons(self.batch_queues[model])
         elif model == "engagement":
             self.service.post_engagements(self.batch_queues[model])
         elif model == "vehicle":
