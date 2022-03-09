@@ -16,7 +16,7 @@ class Service():
         if environment == 'dev':
             self.host = 'https://engine-dev.cinch.io'
         elif environment == 'local':
-            self.host = 'http://app:8000'
+            self.host = 'http://localhost:8000'
         else:
             self.host = 'https://engine.cinch.io'
 
@@ -75,3 +75,6 @@ class Service():
 
     def post_vehicles(self, records):
         return self._patch('customer-refs/vehicles', records)
+
+    def post_subscriptions(self, records):
+        return self._patch('customer-refs/subscriptions', records)

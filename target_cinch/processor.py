@@ -22,6 +22,9 @@ DEPENDENCIES = {
     "vehicle": [
         "customer_ref",
     ],
+    "subscription": [
+        "customer_ref",
+    ],
 }
 
 
@@ -47,6 +50,7 @@ class Processor:
             "transaction_coupon": [],
             "engagement": [],
             "vehicle": [],
+            "subscription": [],
         }
 
     def post_batch(self, model):
@@ -75,6 +79,8 @@ class Processor:
             self.service.post_engagements(self.batch_queues[model])
         elif model == "vehicle":
             self.service.post_vehicles(self.batch_queues[model])
+        elif model == "subscription":
+            self.service.post_subscriptions(self.batch_queues[model])
 
         self.batch_queues[model] = []
 
