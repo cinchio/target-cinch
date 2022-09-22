@@ -14,13 +14,15 @@ class Service():
         self.password = password
 
         if environment == 'dev':
-            self.host = 'https://engine-dev.cinch.io'
+            self.host = 'https://engine.dev.aws.cinch.io'
         elif environment == 'local':
             self.host = 'http://localhost:8000'
         else:
             self.host = 'https://engine.cinch.io'
 
     def _patch(self, url, records, retry=True):
+        logger.log_info(f'SENDING BATCH {url}: {len(records)}')
+
         token = self._get_token()
         response = requests.patch(f'{self.host}/{url}/bulk?match=entity',
                        json=records,
@@ -41,6 +43,8 @@ class Service():
             logger.log_error(f'Response Text: {response.text}')
 
             raise Exception(f"Unable to communicate with server")
+
+        logger.log_info('finished batch')
 
         return response
 
