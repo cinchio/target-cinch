@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="target-cinch",
-    version="0.0.12",
+    version="0.0.13",
     description="Singer.io target for loading data into Cinch",
     author="Cinch",
     url="https://github.com/cinchio/target-cinch",
@@ -12,7 +12,7 @@ setup(
     py_modules=["target_cinch"],
     install_requires=[
         "singer-python==5.12.1",
-        "requests==2.23.0",
+        "requests==2.26.0",
     ],
     entry_points="""
     [console_scripts]
