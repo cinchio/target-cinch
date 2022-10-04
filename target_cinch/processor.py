@@ -25,6 +25,17 @@ DEPENDENCIES = {
     "subscription": [
         "customer_ref",
     ],
+    "cart": [
+        "customer_ref",
+        "location",
+        "vehicle",
+    ],
+    "cart_detail": [
+        "cart",
+    ],
+    "cart_coupon": [
+        "cart",
+    ],
 }
 
 
@@ -48,6 +59,9 @@ class Processor:
             "transaction": [],
             "transaction_detail": [],
             "transaction_coupon": [],
+            "cart": [],
+            "cart_detail": [],
+            "cart_coupon": [],
             "engagement": [],
             "vehicle": [],
             "subscription": [],
@@ -75,6 +89,12 @@ class Processor:
             self.service.post_transaction_details(self.batch_queues[model])
         elif model == "transaction_coupon":
             self.service.post_transaction_coupons(self.batch_queues[model])
+        elif model == "cart":
+            self.service.post_carts(self.batch_queues[model])
+        elif model == "cart_detail":
+            self.service.post_cart_details(self.batch_queues[model])
+        elif model == "cart_coupon":
+            self.service.post_cart_coupons(self.batch_queues[model])
         elif model == "engagement":
             self.service.post_engagements(self.batch_queues[model])
         elif model == "vehicle":

@@ -74,6 +74,15 @@ class Service():
     def post_transaction_coupons(self, records):
         return self._patch('transactions/coupons', records)
 
+    def post_carts(self, records):
+        return self._patch('carts', records)
+
+    def post_cart_details(self, records):
+        return self._patch('carts/details', records)
+
+    def post_cart_coupons(self, records):
+        return self._patch('carts/coupons', records)
+
     def post_engagements(self, records):
         return self._patch('unsubscribes', records)
 
