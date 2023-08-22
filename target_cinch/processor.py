@@ -1,6 +1,9 @@
 from target_cinch.service import Service
 import singer
+import uuid
 from singer import logger
+import hashlib
+from datetime import datetime
 
 BATCH_SIZE = 500
 
@@ -42,6 +45,7 @@ DEPENDENCIES = {
 class Processor:
     config = None
     batch_queues = None
+    session = None
 
     def __init__(self, args):
         self.config = args.config
@@ -67,6 +71,37 @@ class Processor:
             "subscription": [],
         }
 
+    def get_log_id(self, model):
+        hex_string = hashlib.md5(f'{self.session["info"]["id"]}|{model}'.encode("UTF-8")).hexdigest()
+        return str(uuid.UUID(hex=hex_string))
+
+    def post_log(self, model):
+        if not self.session:
+            return
+
+        # Update integration log counts
+        is_first = False
+        if self.session['counts'].get(model, None) is None:
+            is_first = True
+            self.session['counts'][model] = 0
+
+        self.session['counts'][model] += len(self.batch_queues[model])
+
+        if is_first:
+            self.service.post('integration/logs', {
+                'id': self.get_log_id(model),
+                'company': self.session["info"]["company"],
+                'credential': self.session["info"]["credential"],
+                'filepath': self.session["info"]["filepath"],
+                'source_stream': self.session["info"]["stream"],
+                'target_stream': model,
+                'rows_affected': self.session['counts'][model]
+            })
+        else:
+            self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
+                'rows_affected': self.session['counts'][model]
+            })
+
     def post_batch(self, model):
         if not self.batch_queues[model]:
             return
@@ -76,6 +111,9 @@ class Processor:
             # Warning: this can caues a circular dependency issue if not set up correctly
             for dependency in DEPENDENCIES[model]:
                 self.post_batch(dependency)
+
+        # Update integration log info
+        self.post_log(model)
 
         if model == "location":
             self.service.post_locations(self.batch_queues[model])
@@ -132,6 +170,31 @@ class Processor:
             self.process_record(message)
         elif message["type"] == "STATE":
             self.process_state(message)
+
+    def process_log(self, message):
+        if message.get('event') == 'START':
+            # TODO check if we have a previous unclosed session?
+            # save session info in memory
+            self.session = {
+                "counts": {},
+                "info": message
+            }
+        elif self.session and message.get('event') == 'END':
+            # mark session complete? .strftime("%d/%m/%Y %H:%M:%S")
+            for model, _counts in self.session['counts'].items():
+                self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
+                    'completed_when': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                })
+
+            self.session = None
+
+    def send_error(self, message):
+        if self.session:
+            for model, _counts in self.session['counts'].items():
+                self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
+                    'error_message': message
+                })
+
 
     def finalize(self):
         # Send any left over batch values here
