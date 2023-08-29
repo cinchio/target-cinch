@@ -72,7 +72,7 @@ class Processor:
         }
 
     def get_log_id(self, model):
-        hex_string = hashlib.md5(f'{self.session["info"]["id"]}|{model}'.encode("UTF-8")).hexdigest()
+        hex_string = hashlib.md5(f'{self.session["info"].get("id")}|{model}'.encode("UTF-8")).hexdigest()
         return str(uuid.UUID(hex=hex_string))
 
     def post_log(self, model):
@@ -90,10 +90,10 @@ class Processor:
         if is_first:
             self.service.post('integration/logs', {
                 'id': self.get_log_id(model),
-                'company': self.session["info"]["company"],
-                'credential': self.session["info"]["credential"],
-                'filepath': self.session["info"]["filepath"],
-                'source_stream': self.session["info"]["stream"],
+                'company': self.session["info"].get("company"),
+                'credential': self.session["info"].get("credential"),
+                'filepath': self.session["info"].get("filepath"),
+                'source_stream': self.session["info"].get("stream"),
                 'target_stream': model,
                 'rows_affected': self.session['counts'][model]
             })
