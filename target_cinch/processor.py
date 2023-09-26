@@ -71,8 +71,8 @@ class Processor:
             "subscription": [],
         }
 
-    def get_log_id(self, model):
-        hex_string = hashlib.md5(f'{self.session["info"].get("id")}|{model}'.encode("UTF-8")).hexdigest()
+    def get_log_id(self, model=None):
+        hex_string = hashlib.md5(f'{self.session["info"].get("id")}|{model or ""}'.encode("UTF-8")).hexdigest()
         return str(uuid.UUID(hex=hex_string))
 
     def post_log(self, model):
@@ -190,8 +190,18 @@ class Processor:
 
     def send_error(self, message):
         if self.session:
-            for model, _counts in self.session['counts'].items():
-                self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
+            if self.session['counts']:
+                for model, _counts in self.session['counts'].items():
+                    self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
+                        'error_message': message
+                    })
+            else:
+                self.service.post('integration/logs', {
+                    'id': self.get_log_id(),
+                    'company': self.session["info"].get("company"),
+                    'credential': self.session["info"].get("credential"),
+                    'filepath': self.session["info"].get("filepath"),
+                    'source_stream': self.session["info"].get("stream"),
                     'error_message': message
                 })
 
