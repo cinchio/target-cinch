@@ -39,6 +39,11 @@ DEPENDENCIES = {
     "cart_coupon": [
         "cart",
     ],
+    "recommendation": [
+        "customer_ref",
+        "transaction",
+        "vehicle",
+    ],
 }
 
 
@@ -69,6 +74,7 @@ class Processor:
             "engagement": [],
             "vehicle": [],
             "subscription": [],
+            "recommendation": [],
         }
 
     def get_log_id(self, model=None):
@@ -139,6 +145,8 @@ class Processor:
             self.service.post_vehicles(self.batch_queues[model])
         elif model == "subscription":
             self.service.post_subscriptions(self.batch_queues[model])
+        elif model == "recommendation":
+            self.service.post_recommendations(self.batch_queues[model])
 
         self.batch_queues[model] = []
 
