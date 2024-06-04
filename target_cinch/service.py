@@ -112,3 +112,6 @@ class Service():
 
     def post_subscriptions(self, records):
         return self._bulk('customer-refs/subscriptions', records)
+
+    def post_recommendations(self, records):
+        return self._bulk('customer-refs/recommendations', records)
