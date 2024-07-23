@@ -45,9 +45,12 @@ class Service():
         logger.log_info(f'SENDING BATCH {url}: {len(records)}')
 
         token = self._get_token()
-        response = requests.patch(f'{self.host}/{url}/bulk?match=entity',
-                       json=records,
-                       headers={"Authorization": f"Token {token}"})
+        response = requests.patch(
+            f'{self.host}/{url}/bulk?match=entity',
+            json=records,
+            headers={"Authorization": f"Token {token}"},
+            timeout=3600,
+        )
 
         # if we got logged out, try and log us back in and try again
         if response.status_code == 401 and retry:
@@ -71,7 +74,11 @@ class Service():
 
     def _get_token(self):
         if not self.token:
-            response = requests.post(f'{self.host}/users/login', json={"email": self.email, "password": self.password})
+            response = requests.post(
+                f'{self.host}/users/login',
+                json={"email": self.email, "password": self.password},
+                timeout=600
+            )
             response = response.json()
             self.token = response['token']
 
