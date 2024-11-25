@@ -117,6 +117,9 @@ class Service():
     def post_vehicles(self, records):
         return self._bulk('customer-refs/vehicles', records)
 
+    def post_real_estates(self, records):
+        return self._bulk('customer-refs/real-estates', records)
+
     def post_subscriptions(self, records):
         return self._bulk('customer-refs/subscriptions', records)
 

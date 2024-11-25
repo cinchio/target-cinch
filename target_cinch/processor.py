@@ -15,6 +15,7 @@ DEPENDENCIES = {
         "customer_ref",
         "location",
         "vehicle",
+        "real_estate",
     ],
     "transaction_detail": [
         "transaction",
@@ -25,6 +26,9 @@ DEPENDENCIES = {
     "vehicle": [
         "customer_ref",
     ],
+    "real_estate": [
+        "customer_ref",
+    ],
     "subscription": [
         "customer_ref",
     ],
@@ -32,6 +36,7 @@ DEPENDENCIES = {
         "customer_ref",
         "location",
         "vehicle",
+        "real_estate",
     ],
     "cart_detail": [
         "cart",
@@ -43,6 +48,7 @@ DEPENDENCIES = {
         "customer_ref",
         "transaction",
         "vehicle",
+        "real_estate",
     ],
 }
 
@@ -73,6 +79,7 @@ class Processor:
             "cart_coupon": [],
             "engagement": [],
             "vehicle": [],
+            "real_estate": [],
             "subscription": [],
             "recommendation": [],
         }
@@ -143,6 +150,8 @@ class Processor:
             self.service.post_engagements(self.batch_queues[model])
         elif model == "vehicle":
             self.service.post_vehicles(self.batch_queues[model])
+        elif model == "real_estate":
+            self.service.post_real_estates(self.batch_queues[model])
         elif model == "subscription":
             self.service.post_subscriptions(self.batch_queues[model])
         elif model == "recommendation":
