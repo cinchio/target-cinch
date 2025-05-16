@@ -197,6 +197,9 @@ class Processor:
                 "info": message
             }
         elif self.session and message.get('event') == 'END':
+            # We need to actually post the data to the API before trying to close the session
+            self.finalize()
+
             # mark session complete? .strftime("%d/%m/%Y %H:%M:%S")
             for model, _counts in self.session['counts'].items():
                 self.service.patch(f'integration/logs/{self.get_log_id(model)}', {
